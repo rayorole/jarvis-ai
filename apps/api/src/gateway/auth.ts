@@ -49,7 +49,7 @@ export async function requireCsrf(
   const origin = request.headers.get("origin");
   if (origin !== null) {
     const host = request.headers.get("host");
-    let sameOrigin = false;
+    let sameOrigin: boolean;
     try {
       sameOrigin = new URL(origin).host === host;
     } catch {

@@ -7,9 +7,9 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   return (
-    <main>
+    <div>
       <Greeting name="Jarvis" />
       <p>Jarvis AI control panel</p>
-    </main>
+    </div>
   );
 }
