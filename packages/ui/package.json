@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "echo 'no tests in @jarvis/ui'",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
