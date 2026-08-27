@@ -1,7 +1,12 @@
 node_modules/
 dist/
-.turbo/
+.output/
+.nitro/
+.tanstack/
+*.tsbuildinfo
+.vite/
 coverage/
+.turbo/
 *.log
 .env
 .env.*

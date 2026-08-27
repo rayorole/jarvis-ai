@@ -417,8 +417,10 @@ describe("HttpGatewayClient — real URL construction and header stripping", () 
       browserHeaders,
       signal: new AbortController().signal,
     });
-    expect(seen[0].url).toBe("https://os.orole.be/v1/sessions/abc_123");
-    const headers = new Headers(seen[0].init.headers as Headers);
+    expect(seen).toHaveLength(1);
+    const firstCall = seen[0]!;
+    expect(firstCall.url).toBe("https://os.orole.be/v1/sessions/abc_123");
+    const headers = new Headers(firstCall.init.headers as Headers);
     expect(headers.get("authorization")).toBe(`Bearer ${BEARER}`);
     expect(headers.get("cookie")).toBeNull();
     expect(headers.get("connection")).toBeNull();

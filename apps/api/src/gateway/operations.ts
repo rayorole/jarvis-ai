@@ -197,14 +197,19 @@ export function matchOperation(
     let matched = true;
     for (let i = 0; i < opSegments.length; i++) {
       const seg = opSegments[i];
+      const reqSeg = reqSegments[i];
+      if (seg === undefined || reqSeg === undefined) {
+        matched = false;
+        break;
+      }
       if (seg.startsWith(":")) {
-        const value = decodeURIComponent(reqSegments[i]);
+        const value = decodeURIComponent(reqSeg);
         if (!ID_PARAM_PATTERN.test(value)) {
           matched = false;
           break;
         }
         params[seg.slice(1)] = value;
-      } else if (seg !== reqSegments[i]) {
+      } else if (seg !== reqSeg) {
         matched = false;
         break;
       }
