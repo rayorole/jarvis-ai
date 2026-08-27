@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { createSessionsApi } from "./sessions/index.js";
+import { createFilesApi } from "./files/index.js";
 
 export function createApp() {
   const app = new Hono();
@@ -8,6 +9,7 @@ export function createApp() {
   app.get("/healthz", (c) => c.json({ status: "ok" }));
 
   app.route("/api/sessions", createSessionsApi().routes);
+  app.route("/api/files", createFilesApi().routes);
 
   return app;
 }
