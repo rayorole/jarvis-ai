@@ -17,6 +17,7 @@ import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as KanbanRouteImport } from './routes/kanban'
 import { Route as MemoryRouteImport } from './routes/memory'
 import { Route as ShellDemoRouteImport } from './routes/shell-demo'
+import { Route as UsageRouteImport } from './routes/usage'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +59,11 @@ const ShellDemoRoute = ShellDemoRouteImport.update({
   path: '/shell-demo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UsageRoute = UsageRouteImport.update({
+  id: '/usage',
+  path: '/usage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/kanban': typeof KanbanRoute
   '/memory': typeof MemoryRoute
   '/shell-demo': typeof ShellDemoRoute
+  '/usage': typeof UsageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/kanban': typeof KanbanRoute
   '/memory': typeof MemoryRoute
   '/shell-demo': typeof ShellDemoRoute
+  '/usage': typeof UsageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/kanban': typeof KanbanRoute
   '/memory': typeof MemoryRoute
   '/shell-demo': typeof ShellDemoRoute
+  '/usage': typeof UsageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/memory'
     | '/shell-demo'
+    | '/usage'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/memory'
     | '/shell-demo'
+    | '/usage'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/kanban'
     | '/memory'
     | '/shell-demo'
+    | '/usage'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   KanbanRoute: typeof KanbanRoute
   MemoryRoute: typeof MemoryRoute
   ShellDemoRoute: typeof ShellDemoRoute
+  UsageRoute: typeof UsageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellDemoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/usage': {
+      id: '/usage'
+      path: '/usage'
+      fullPath: '/usage'
+      preLoaderRoute: typeof UsageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,16 +224,8 @@ const rootRouteChildren: RootRouteChildren = {
   KanbanRoute: KanbanRoute,
   MemoryRoute: MemoryRoute,
   ShellDemoRoute: ShellDemoRoute,
+  UsageRoute: UsageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

@@ -9,7 +9,7 @@ import {
   RouterProvider,
 } from "@tanstack/react-router";
 
-const ROUTE_PATHS = ["/", "/chat", "/kanban", "/jobs", "/memory", "/files", "/gateway"] as const;
+const ROUTE_PATHS = ["/", "/chat", "/kanban", "/jobs", "/memory", "/files", "/gateway", "/usage"] as const;
 
 /**
  * Test helper: mounts children under a real TanStack Router instance with
