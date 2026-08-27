@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { handleGatewayRequest } from "../src/gateway/proxy.js";
 import type { SessionVerifier } from "../src/gateway/auth.js";
 import { OperationClassRateLimiter } from "../src/gateway/rate-limit.js";

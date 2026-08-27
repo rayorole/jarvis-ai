@@ -12,7 +12,6 @@ import {
   clientIdentity,
   type OperationClassRateLimiter,
 } from "./rate-limit.js";
-import { sanitizeUpstreamResponseHeaders } from "./headers.js";
 import { HttpGatewayClient, fixedOriginUrlBuilder, type GatewayClient } from "./gateway-client.js";
 
 export interface GatewayProxyDeps {
