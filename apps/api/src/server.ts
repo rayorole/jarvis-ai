@@ -1,10 +1,13 @@
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
+import { createSessionsApi } from "./sessions/index.js";
 
 export function createApp() {
   const app = new Hono();
 
   app.get("/healthz", (c) => c.json({ status: "ok" }));
+
+  app.route("/api/sessions", createSessionsApi().routes);
 
   return app;
 }

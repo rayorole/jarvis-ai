@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { StatusDot } from "@jarvis/ui";
+import { SessionHistoryPanel } from "../sessions/session-history";
 import "../../styles/tokens.css";
 import "../../styles/shell.css";
 
@@ -217,14 +218,9 @@ function NavGroups({ activePath }: { activePath: string }) {
   );
 }
 
-/** Slot for issue #7/#15 to populate recent sessions and HUD data. */
+/** Recent-sessions slot populated by the session history panel (issue #7). */
 function RecentSessions() {
-  return (
-    <div className="sidebar-section" data-slot="recent-sessions">
-      <p className="sidebar-heading">Recent</p>
-      <ul className="recent-sessions" aria-label="Recent sessions" />
-    </div>
-  );
+  return <SessionHistoryPanel />;
 }
 
 function SidebarFooter() {
