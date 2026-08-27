@@ -4,5 +4,5 @@
     "types": ["node"],
     "module": "ESNext"
   },
-  "include": ["src", "tests"]
+  "include": ["src", "test", "tests"]
 }
