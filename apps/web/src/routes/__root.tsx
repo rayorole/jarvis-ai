@@ -1,6 +1,8 @@
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { AppShell, type GatewayState } from "../components/app-shell/app-shell";
+import { applyPreferences, readStoredPreferences } from "../components/settings/settings";
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -9,6 +11,10 @@ export const Route = createRootRoute({
 function RootLayout(): ReactNode {
   // Issue #15 will feed live gateway/HUD state through slots.
   const gatewayState: GatewayState = "unknown";
+  // Restore persisted theme/density before first paint of the shell.
+  useEffect(() => {
+    applyPreferences(readStoredPreferences());
+  }, []);
   return (
     <AppShell gatewayState={gatewayState}>
       <Outlet />

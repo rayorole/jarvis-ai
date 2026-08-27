@@ -7,7 +7,7 @@
  * symlink resolution. Traversal, null bytes, symlink escapes, and
  * secret/credential files are rejected or redacted.
  */
-import { realpath, readdir, stat } from "node:fs/promises";
+import { realpath, stat } from "node:fs/promises";
 import { join, resolve, sep, isAbsolute } from "node:path";
 import { Hono } from "hono";
 
