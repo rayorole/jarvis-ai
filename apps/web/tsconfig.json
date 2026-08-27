@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsxImportSource": "react",
+    "types": ["vite/client", "@testing-library/jest-dom"],
+    "paths": {
+      "@/*": ["src/*"],
+      "@jarvis/ui": ["../../packages/ui/src/index.ts"]
+    },
+    "module": "ESNext"
+  },
+  "include": ["src", "vite.config.ts", "vitest.config.ts", "tests"]
+}

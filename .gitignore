@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.output/
+.nitro/
+.tanstack/
+*.tsbuildinfo
+.vite/
+coverage/
+.turbo/
+.turbo/
