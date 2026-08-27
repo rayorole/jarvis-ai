@@ -10,33 +10,128 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ChatRouteImport } from './routes/chat'
+import { Route as FilesRouteImport } from './routes/files'
+import { Route as GatewayRouteImport } from './routes/gateway'
+import { Route as JobsRouteImport } from './routes/jobs'
+import { Route as KanbanRouteImport } from './routes/kanban'
+import { Route as MemoryRouteImport } from './routes/memory'
+import { Route as ShellDemoRouteImport } from './routes/shell-demo'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FilesRoute = FilesRouteImport.update({
+  id: '/files',
+  path: '/files',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GatewayRoute = GatewayRouteImport.update({
+  id: '/gateway',
+  path: '/gateway',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JobsRoute = JobsRouteImport.update({
+  id: '/jobs',
+  path: '/jobs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KanbanRoute = KanbanRouteImport.update({
+  id: '/kanban',
+  path: '/kanban',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MemoryRoute = MemoryRouteImport.update({
+  id: '/memory',
+  path: '/memory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShellDemoRoute = ShellDemoRouteImport.update({
+  id: '/shell-demo',
+  path: '/shell-demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
+  '/files': typeof FilesRoute
+  '/gateway': typeof GatewayRoute
+  '/jobs': typeof JobsRoute
+  '/kanban': typeof KanbanRoute
+  '/memory': typeof MemoryRoute
+  '/shell-demo': typeof ShellDemoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
+  '/files': typeof FilesRoute
+  '/gateway': typeof GatewayRoute
+  '/jobs': typeof JobsRoute
+  '/kanban': typeof KanbanRoute
+  '/memory': typeof MemoryRoute
+  '/shell-demo': typeof ShellDemoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
+  '/files': typeof FilesRoute
+  '/gateway': typeof GatewayRoute
+  '/jobs': typeof JobsRoute
+  '/kanban': typeof KanbanRoute
+  '/memory': typeof MemoryRoute
+  '/shell-demo': typeof ShellDemoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/chat'
+    | '/files'
+    | '/gateway'
+    | '/jobs'
+    | '/kanban'
+    | '/memory'
+    | '/shell-demo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/chat'
+    | '/files'
+    | '/gateway'
+    | '/jobs'
+    | '/kanban'
+    | '/memory'
+    | '/shell-demo'
+  id:
+    | '__root__'
+    | '/'
+    | '/chat'
+    | '/files'
+    | '/gateway'
+    | '/jobs'
+    | '/kanban'
+    | '/memory'
+    | '/shell-demo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ChatRoute: typeof ChatRoute
+  FilesRoute: typeof FilesRoute
+  GatewayRoute: typeof GatewayRoute
+  JobsRoute: typeof JobsRoute
+  KanbanRoute: typeof KanbanRoute
+  MemoryRoute: typeof MemoryRoute
+  ShellDemoRoute: typeof ShellDemoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,12 +143,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/files': {
+      id: '/files'
+      path: '/files'
+      fullPath: '/files'
+      preLoaderRoute: typeof FilesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gateway': {
+      id: '/gateway'
+      path: '/gateway'
+      fullPath: '/gateway'
+      preLoaderRoute: typeof GatewayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jobs': {
+      id: '/jobs'
+      path: '/jobs'
+      fullPath: '/jobs'
+      preLoaderRoute: typeof JobsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kanban': {
+      id: '/kanban'
+      path: '/kanban'
+      fullPath: '/kanban'
+      preLoaderRoute: typeof KanbanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/memory': {
+      id: '/memory'
+      path: '/memory'
+      fullPath: '/memory'
+      preLoaderRoute: typeof MemoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shell-demo': {
+      id: '/shell-demo'
+      path: '/shell-demo'
+      fullPath: '/shell-demo'
+      preLoaderRoute: typeof ShellDemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ChatRoute: ChatRoute,
+  FilesRoute: FilesRoute,
+  GatewayRoute: GatewayRoute,
+  JobsRoute: JobsRoute,
+  KanbanRoute: KanbanRoute,
+  MemoryRoute: MemoryRoute,
+  ShellDemoRoute: ShellDemoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
