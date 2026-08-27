@@ -18,6 +18,10 @@ if (typeof globalThis.ResizeObserver === "undefined") {
 if (typeof Element !== "undefined" && typeof Element.prototype.scrollTo !== "function") {
   Element.prototype.scrollTo = function scrollTo(): void {};
 }
+if (typeof window !== "undefined" && typeof window.scrollTo !== "function") {
+  // jsdom's window.scrollTo is "not implemented"; tanstack router calls it on navigation.
+  window.scrollTo = function scrollTo(): void {};
+}
 
 expect.extend(matchers);
 

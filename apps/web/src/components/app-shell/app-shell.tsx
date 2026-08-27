@@ -35,6 +35,7 @@ const NAV_ITEMS = [
   { to: "/memory", label: "Memory", group: "System" },
   { to: "/files", label: "Files", group: "System" },
   { to: "/gateway", label: "Gateway", group: "System" },
+  { to: "/settings", label: "Settings", group: "System" },
 ] as const;
 
 const RAIL_SEGMENTS = [
