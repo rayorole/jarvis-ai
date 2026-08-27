@@ -18,6 +18,7 @@ import { Route as KanbanRouteImport } from './routes/kanban'
 import { Route as MemoryRouteImport } from './routes/memory'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ShellDemoRouteImport } from './routes/shell-demo'
+import { Route as UsageRouteImport } from './routes/usage'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,6 +65,11 @@ const ShellDemoRoute = ShellDemoRouteImport.update({
   path: '/shell-demo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UsageRoute = UsageRouteImport.update({
+  id: '/usage',
+  path: '/usage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/memory': typeof MemoryRoute
   '/settings': typeof SettingsRoute
   '/shell-demo': typeof ShellDemoRoute
+  '/usage': typeof UsageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByTo {
   '/memory': typeof MemoryRoute
   '/settings': typeof SettingsRoute
   '/shell-demo': typeof ShellDemoRoute
+  '/usage': typeof UsageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/memory': typeof MemoryRoute
   '/settings': typeof SettingsRoute
   '/shell-demo': typeof ShellDemoRoute
+  '/usage': typeof UsageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
     | '/memory'
     | '/settings'
     | '/shell-demo'
+    | '/usage'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/memory'
     | '/settings'
     | '/shell-demo'
+    | '/usage'
   id:
     | '__root__'
     | '/'
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
     | '/memory'
     | '/settings'
     | '/shell-demo'
+    | '/usage'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -145,6 +157,7 @@ export interface RootRouteChildren {
   MemoryRoute: typeof MemoryRoute
   SettingsRoute: typeof SettingsRoute
   ShellDemoRoute: typeof ShellDemoRoute
+  UsageRoute: typeof UsageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellDemoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/usage': {
+      id: '/usage'
+      path: '/usage'
+      fullPath: '/usage'
+      preLoaderRoute: typeof UsageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -225,6 +245,7 @@ const rootRouteChildren: RootRouteChildren = {
   MemoryRoute: MemoryRoute,
   SettingsRoute: SettingsRoute,
   ShellDemoRoute: ShellDemoRoute,
+  UsageRoute: UsageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
