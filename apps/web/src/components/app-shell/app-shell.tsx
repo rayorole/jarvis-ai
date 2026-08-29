@@ -4,6 +4,7 @@ import { StatusDot } from "@jarvis/ui";
 import { SessionHistoryPanel } from "../sessions/session-history";
 import "../../styles/tokens.css";
 import "../../styles/shell.css";
+import "../../styles/globals.css";
 
 export type GatewayState = "online" | "degraded" | "offline" | "unknown";
 

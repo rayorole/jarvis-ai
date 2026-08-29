@@ -22,6 +22,21 @@ if (typeof window !== "undefined" && typeof window.scrollTo !== "function") {
   // jsdom's window.scrollTo is "not implemented"; tanstack router calls it on navigation.
   window.scrollTo = function scrollTo(): void {};
 }
+// jsdom lacks PointerEvent capture APIs; Radix Select/Popover need them to open.
+if (typeof Element !== "undefined" && typeof Element.prototype.hasPointerCapture !== "function") {
+  Element.prototype.hasPointerCapture = function hasPointerCapture(): boolean {
+    return false;
+  };
+}
+if (typeof Element !== "undefined" && typeof Element.prototype.setPointerCapture !== "function") {
+  Element.prototype.setPointerCapture = function setPointerCapture(): void {};
+}
+if (typeof Element !== "undefined" && typeof Element.prototype.releasePointerCapture !== "function") {
+  Element.prototype.releasePointerCapture = function releasePointerCapture(): void {};
+}
+if (typeof Element !== "undefined" && typeof Element.prototype.scrollIntoView !== "function") {
+  Element.prototype.scrollIntoView = function scrollIntoView(): void {};
+}
 
 expect.extend(matchers);
 

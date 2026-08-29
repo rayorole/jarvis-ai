@@ -21,6 +21,9 @@ import {
   type ResolvedApproval,
 } from "../../lib/use-approvals";
 import { sanitizeToolText } from "./tool-card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export interface ApprovalCardProps {
   request: ApprovalRequest;
@@ -41,6 +44,8 @@ const DECISION_LABELS: Record<ApprovalDecision, string> = {
 
 /** Decisions that a reasonable user means when they say "yes". */
 const AFFIRMATIVE_DECISIONS: ApprovalDecision[] = ["approve-once", "approve-for-session"];
+
+const DESTRUCTIVE_DECISIONS: ApprovalDecision[] = ["approve-once", "approve-for-session"];
 
 /**
  * True when the request carries a risk category that must never get default
@@ -109,38 +114,50 @@ export function ApprovalCard(props: ApprovalCardProps): ReactNode {
   const focusDecision: ApprovalDecision = "deny";
 
   return (
-    <div
+    <Card
       className="approval-card"
       data-testid={`approval-card-${request.id}`}
       data-destructive={destructive ? "true" : "false"}
       aria-label={label}
     >
-      <p data-testid={`approval-explanation-${request.id}`}>{safeExplanation}</p>
-      <p>
-        <span data-testid={`approval-risk-${request.id}`}>{request.riskCategory}</span>
-        {" — "}
-        <span data-testid={`approval-action-${request.id}`}>{safeAction}</span>
-        {safePath ? <span data-testid={`approval-path-${request.id}`}>: {safePath}</span> : null}
-      </p>
-      <p data-testid={`approval-expires-${request.id}`}>Expires {request.expiresAt}</p>
-      <div role="group" aria-label="Approval decisions" data-testid={`approval-actions-${request.id}`}>
-        {supported.map((decision) => (
-          <button
-            key={decision}
-            type="button"
-            disabled={pendingId !== undefined}
-            data-pending={pendingId === request.id ? "true" : "false"}
-            data-decision={decision}
-            autoFocus={decision === focusDecision}
-            onClick={() => void onDecision(decision)}
-          >
-            {DECISION_LABELS[decision]}
-          </button>
-        ))}
-        {firstAffirmative === undefined && supported.length === 0 ? (
-          <p data-testid={`approval-no-decisions-${request.id}`}>No decisions available</p>
-        ) : null}
-      </div>
-    </div>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          {safeName}
+          <Badge variant={destructive ? "destructive" : "outline"} data-testid={`approval-risk-${request.id}`}>
+            {request.riskCategory}
+          </Badge>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2 text-sm">
+        <p data-testid={`approval-explanation-${request.id}`}>{safeExplanation}</p>
+        <p>
+          <span data-testid={`approval-action-${request.id}`}>{safeAction}</span>
+          {safePath ? <span data-testid={`approval-path-${request.id}`}>: {safePath}</span> : null}
+        </p>
+        <p data-testid={`approval-expires-${request.id}`} className="text-xs text-muted-foreground">Expires {request.expiresAt}</p>
+      </CardContent>
+      <CardFooter>
+        <div role="group" aria-label="Approval decisions" data-testid={`approval-actions-${request.id}`} className="flex gap-2">
+          {supported.map((decision) => (
+            <Button
+              key={decision}
+              type="button"
+              variant={DESTRUCTIVE_DECISIONS.includes(decision) && destructive ? "destructive" : "outline"}
+              size="sm"
+              disabled={pendingId !== undefined}
+              data-pending={pendingId === request.id ? "true" : "false"}
+              data-decision={decision}
+              autoFocus={decision === focusDecision}
+              onClick={() => void onDecision(decision)}
+            >
+              {DECISION_LABELS[decision]}
+            </Button>
+          ))}
+          {firstAffirmative === undefined && supported.length === 0 ? (
+            <p data-testid={`approval-no-decisions-${request.id}`}>No decisions available</p>
+          ) : null}
+        </div>
+      </CardFooter>
+    </Card>
   );
 }
