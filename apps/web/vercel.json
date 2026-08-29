@@ -1,0 +1,24 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd ../.. && npx pnpm --filter @jarvis/web build",
+  "outputDirectory": "dist/client",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/assets/(.*)",
+      "destination": "/assets/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/api/render"
+    }
+  ],
+  "functions": {
+    "api/render.js": {
+      "memory": 1024,
+      "maxDuration": 30,
+      "includeFiles": "dist/server/**"
+    }
+  },
+  "installCommand": "npm i -g pnpm@9 && pnpm install --no-frozen-lockfile"
+}
