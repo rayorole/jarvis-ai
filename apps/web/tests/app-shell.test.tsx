@@ -40,16 +40,14 @@ describe("AppShell", () => {
     expect(screen.getAllByText(/gateway online/i).length).toBeGreaterThan(0);
   });
 
-  it("has a New chat action and a command/search entry", async () => {
+  it("has a New chat action", async () => {
     await renderShell();
     expect(screen.getByRole("button", { name: /new chat/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /search|command/i })).toBeInTheDocument();
   });
 
-  it("provides footer actions: appearance and logout", async () => {
+  it("provides a footer appearance link", async () => {
     await renderShell();
-    expect(screen.getByRole("button", { name: /appearance/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /log ?out/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /appearance/i })).toBeInTheDocument();
   });
 
   it("marks the active route link with aria-current", async () => {

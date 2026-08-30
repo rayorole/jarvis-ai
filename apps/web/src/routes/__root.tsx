@@ -1,12 +1,29 @@
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Link, Outlet, Scripts } from "@tanstack/react-router";
 import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { AppShell, type GatewayState } from "../components/app-shell/app-shell";
 import { applyPreferences, readStoredPreferences } from "../components/settings/settings";
 
 export const Route = createRootRoute({
-  component: RootLayout,
+  component: RootDocument,
 });
+
+function RootDocument(): ReactNode {
+  return (
+    <html lang="en" data-theme="dark" className="dark">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Jarvis</title>
+        <HeadContent />
+      </head>
+      <body>
+        <RootLayout />
+        <Scripts />
+      </body>
+    </html>
+  );
+}
 
 function RootLayout(): ReactNode {
   // Issue #15 will feed live gateway/HUD state through slots.

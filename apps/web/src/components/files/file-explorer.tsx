@@ -10,6 +10,16 @@
 import type { ReactNode } from "react";
 import { StatePattern } from "@jarvis/ui";
 import { useFileExplorer } from "../../lib/use-file-explorer";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 function formatSize(size: number | null): string {
   if (size === null) return "";
@@ -33,26 +43,29 @@ export function FileExplorer(): ReactNode {
   const items = explorer.filteredItems;
 
   return (
-    <div className="file-explorer" data-testid="file-explorer">
-      <header className="file-explorer-header">
-        <h2>Files</h2>
+    <div className="file-explorer space-y-3" data-testid="file-explorer">
+      <header className="file-explorer-header flex flex-wrap items-center gap-2">
+        <h2 className="text-lg font-semibold">Files</h2>
         {explorer.roots.length > 1 ? (
-          <select
-            aria-label="Choose root"
-            data-testid="root-select"
+          <Select
             value={explorer.rootId ?? ""}
-            onChange={(e) => explorer.setRoot(e.target.value)}
+            onValueChange={(v) => explorer.setRoot(v)}
           >
-            {explorer.roots.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.label}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="w-44" aria-label="Choose root" data-testid="root-select">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {explorer.roots.map((r) => (
+                <SelectItem key={r.id} value={r.id}>
+                  {r.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         ) : null}
-        <input
+        <Input
           type="search"
-          className="file-search"
+          className="file-search max-w-xs"
           data-testid="file-search"
           aria-label="Filter files"
           placeholder="Filter current folder…"
@@ -61,18 +74,18 @@ export function FileExplorer(): ReactNode {
         />
       </header>
 
-      <nav className="file-breadcrumbs" data-testid="file-breadcrumbs" aria-label="Path">
+      <nav className="file-breadcrumbs flex flex-wrap items-center gap-1" data-testid="file-breadcrumbs" aria-label="Path">
         {explorer.breadcrumbs.map((segment, index) => {
           const target = explorer.breadcrumbs.slice(1, index + 1).join("/");
           const isLast = index === explorer.breadcrumbs.length - 1;
           return (
             <span key={`${index}:${segment}`} className="crumb">
               {isLast ? (
-                <span aria-current="location">{segment === "" ? "/" : segment}</span>
+                <span aria-current="location" className="text-sm text-muted-foreground">{segment === "" ? "/" : segment}</span>
               ) : (
-                <button type="button" onClick={() => explorer.openPath(target)}>
+                <Button variant="link" size="sm" className="h-auto p-0" onClick={() => explorer.openPath(target)}>
                   {segment === "" ? "/" : segment}
-                </button>
+                </Button>
               )}
             </span>
           );
@@ -80,31 +93,33 @@ export function FileExplorer(): ReactNode {
       </nav>
 
       {explorer.path !== "" ? (
-        <button type="button" className="file-up" data-testid="file-up" onClick={explorer.navigateUp}>
+        <Button variant="outline" size="sm" className="file-up" data-testid="file-up" onClick={explorer.navigateUp}>
           ↑ Up one level
-        </button>
+        </Button>
       ) : null}
 
       {items.length === 0 ? (
         <StatePattern kind="empty" title="Empty folder" detail={explorer.search ? "No entries match the filter." : undefined} />
       ) : (
-        <ul className="file-list" data-testid="file-list">
+        <ul className="file-list space-y-1" data-testid="file-list">
           {items.map((item) => (
             <li key={item.path} className={item.type} data-testid={`file-entry-${item.type}`}>
-              {item.type === "directory" ? (
-                <button type="button" className="file-name" onClick={() => explorer.openPath(item.path)}>
-                  {item.name}/
-                </button>
-              ) : (
-                <span className="file-name">{item.name}</span>
-              )}
-              <span className="file-size">{formatSize(item.size)}</span>
+              <div className="flex items-center justify-between gap-2 rounded-md border px-2 py-1.5 text-sm">
+                {item.type === "directory" ? (
+                  <Button variant="ghost" size="sm" className="file-name h-auto p-0 font-normal" onClick={() => explorer.openPath(item.path)}>
+                    {item.name}/
+                  </Button>
+                ) : (
+                  <span className="file-name">{item.name}</span>
+                )}
+                <span className="file-size text-xs text-muted-foreground">{formatSize(item.size)}</span>
+              </div>
             </li>
           ))}
         </ul>
       )}
 
-      {listing?.truncated ? <p className="file-truncated">Listing truncated — refine with the filter or descend into a folder.</p> : null}
+      {listing?.truncated ? <p className="file-truncated text-sm text-amber-400">Listing truncated — refine with the filter or descend into a folder.</p> : null}
     </div>
   );
 }

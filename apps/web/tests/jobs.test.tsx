@@ -95,7 +95,9 @@ describe("jobs route — jobs tab", () => {
     vi.stubGlobal("fetch", jsonOk([queued, paused]));
     renderJobs();
     expect(await screen.findByTestId("job-j2")).toBeInTheDocument();
-    await userEvent.selectOptions(screen.getByLabelText("Filter by state"), "paused");
+    const trigger = screen.getByLabelText("Filter by state");
+    await userEvent.click(trigger);
+    await userEvent.click(await screen.findByRole("option", { name: "paused" }));
     expect(screen.queryByTestId("job-j2")).not.toBeInTheDocument();
     expect(screen.getByTestId("job-j3")).toBeInTheDocument();
   });

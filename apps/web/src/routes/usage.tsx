@@ -3,6 +3,16 @@ import { StatePattern, Panel } from "@jarvis/ui";
 import { useUsage, USAGE_POLL_INTERVAL_MS } from "@/hooks/useUsage";
 import { UsageTicker } from "@/components/usage/usage-ticker";
 import { formatUsd } from "@/components/usage/format";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export const Route = createFileRoute("/usage")({
   component: UsageRoute,
@@ -38,38 +48,40 @@ function UsageRoute() {
   }
 
   return (
-    <section aria-labelledby="usage-title">
-      <h1 id="usage-title">Usage &amp; Cost</h1>
+    <section aria-labelledby="usage-title" className="space-y-4">
+      <h1 id="usage-title" className="text-lg font-semibold">Usage &amp; Cost</h1>
       <UsageTicker totals={data.totals} live={isLive} />
-      <button type="button" onClick={() => void refetch()} data-testid="usage-refresh">
+      <Button variant="outline" size="sm" onClick={() => void refetch()} data-testid="usage-refresh">
         Refresh
-      </button>
-      <p data-testid="usage-poll-interval">Auto-refreshes every {Math.round(USAGE_POLL_INTERVAL_MS / 1000)}s.</p>
+      </Button>
+      <p data-testid="usage-poll-interval" className="text-sm text-muted-foreground">
+        Auto-refreshes every {Math.round(USAGE_POLL_INTERVAL_MS / 1000)}s.
+      </p>
       <Panel>
-        <h2>Per-session usage</h2>
-        <table>
-          <caption>Sessions by token usage and cost</caption>
-          <thead>
-            <tr>
-              <th scope="col">Session</th>
-              <th scope="col">Messages</th>
-              <th scope="col">Input tokens</th>
-              <th scope="col">Output tokens</th>
-              <th scope="col">Cost</th>
-            </tr>
-          </thead>
-          <tbody>
+        <h2 className="mb-2 font-medium">Per-session usage</h2>
+        <Table>
+          <TableCaption>Sessions by token usage and cost</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead scope="col">Session</TableHead>
+              <TableHead scope="col">Messages</TableHead>
+              <TableHead scope="col">Input tokens</TableHead>
+              <TableHead scope="col">Output tokens</TableHead>
+              <TableHead scope="col">Cost</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {sessions.map((s) => (
-              <tr key={s.id} data-testid={`session-${s.id}`}>
-                <th scope="row">{s.label || s.id}</th>
-                <td>{s.messages}</td>
-                <td>{new Intl.NumberFormat("en-US").format(s.inputTokens)}</td>
-                <td>{new Intl.NumberFormat("en-US").format(s.outputTokens)}</td>
-                <td data-testid={`session-${s.id}-cost`}>{formatUsd(s.costUsd)}</td>
-              </tr>
+              <TableRow key={s.id} data-testid={`session-${s.id}`}>
+                <TableCell className="font-medium">{s.label || s.id}</TableCell>
+                <TableCell>{s.messages}</TableCell>
+                <TableCell>{new Intl.NumberFormat("en-US").format(s.inputTokens)}</TableCell>
+                <TableCell>{new Intl.NumberFormat("en-US").format(s.outputTokens)}</TableCell>
+                <TableCell data-testid={`session-${s.id}-cost`}>{formatUsd(s.costUsd)}</TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </Panel>
     </section>
   );

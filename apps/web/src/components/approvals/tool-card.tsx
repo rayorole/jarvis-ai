@@ -6,6 +6,9 @@
  * lifecycle state it is given and never executes anything client-side.
  */
 import { useState, type ReactNode } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 export type ToolCardState = "queued" | "running" | "completed" | "failed" | "cancelled";
 
@@ -31,6 +34,14 @@ const STATE_LABELS: Record<ToolCardState, string> = {
   completed: "Completed",
   failed: "Failed",
   cancelled: "Cancelled",
+};
+
+const STATE_BADGE_VARIANT: Record<ToolCardState, "default" | "secondary" | "destructive" | "outline"> = {
+  running: "default",
+  completed: "secondary",
+  failed: "destructive",
+  cancelled: "outline",
+  queued: "outline",
 };
 
 /**
@@ -59,47 +70,50 @@ export function ToolCard({
   const safeArtifacts = (artifacts ?? []).map(sanitizeToolText);
 
   return (
-    <div
-      className="tool-card"
+    <Collapsible
+      open={expanded}
+      onOpenChange={setExpanded}
+      className="tool-card rounded-md border p-2"
       data-testid={`tool-card-${toolCallId}`}
       data-state={state}
       role="group"
       aria-label={`Tool ${safeName}: ${STATE_LABELS[state]}`}
     >
-      <div className="tool-card-summary">
-        <span data-testid={`tool-state-${toolCallId}`} data-state={state}>
+      <div className="tool-card-summary flex items-center gap-2 text-sm">
+        <Badge variant={STATE_BADGE_VARIANT[state]} data-testid={`tool-state-${toolCallId}`} data-state={state}>
           {STATE_LABELS[state]}
-        </span>
-        <span data-testid={`tool-name-${toolCallId}`}>{safeName}</span>
-        {safeArgs !== undefined ? <span data-testid={`tool-args-${toolCallId}`}>{safeArgs}</span> : null}
-        {elapsedLabel ? <span data-testid={`tool-elapsed-${toolCallId}`}>{sanitizeToolText(elapsedLabel)}</span> : null}
-        <button
-          type="button"
-          aria-expanded={expanded}
-          aria-label={`Toggle tool ${safeName} details`}
-          data-testid={`tool-expand-${toolCallId}`}
-          onClick={() => setExpanded((v) => !v)}
-        >
-          {expanded ? "Hide details" : "Show details"}
-        </button>
+        </Badge>
+        <span data-testid={`tool-name-${toolCallId}`} className="font-medium">{safeName}</span>
+        {safeArgs !== undefined ? <span data-testid={`tool-args-${toolCallId}`} className="truncate text-muted-foreground">{safeArgs}</span> : null}
+        {elapsedLabel ? <span data-testid={`tool-elapsed-${toolCallId}`} className="text-xs text-muted-foreground">{sanitizeToolText(elapsedLabel)}</span> : null}
+        <CollapsibleTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-expanded={expanded}
+            aria-label={`Toggle tool ${safeName} details`}
+            data-testid={`tool-expand-${toolCallId}`}
+          >
+            {expanded ? "Hide details" : "Show details"}
+          </Button>
+        </CollapsibleTrigger>
       </div>
-      {expanded ? (
-        <div className="tool-card-details" data-testid={`tool-details-${toolCallId}`}>
-          {safeOutput ? (
-            <pre data-testid={`tool-output-${toolCallId}`}>{safeOutput}</pre>
-          ) : (
-            <p data-testid={`tool-output-empty-${toolCallId}`}>No output</p>
-          )}
-          {safeArtifacts.length > 0 ? (
-            <ul data-testid={`tool-artifacts-${toolCallId}`}>
-              {safeArtifacts.map((a) => (
-                <li key={a}>{a}</li>
-              ))}
-            </ul>
-          ) : null}
-          {logDrawer}
-        </div>
-      ) : null}
-    </div>
+      <CollapsibleContent className="tool-card-details" data-testid={`tool-details-${toolCallId}`}>
+        {safeOutput ? (
+          <pre data-testid={`tool-output-${toolCallId}`} className="mt-2 overflow-x-auto rounded bg-muted p-2 text-xs">{safeOutput}</pre>
+        ) : (
+          <p data-testid={`tool-output-empty-${toolCallId}`} className="mt-2 text-sm text-muted-foreground">No output</p>
+        )}
+        {safeArtifacts.length > 0 ? (
+          <ul data-testid={`tool-artifacts-${toolCallId}`} className="mt-2 list-inside list-disc text-xs text-muted-foreground">
+            {safeArtifacts.map((a) => (
+              <li key={a}>{a}</li>
+            ))}
+          </ul>
+        ) : null}
+        {logDrawer}
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

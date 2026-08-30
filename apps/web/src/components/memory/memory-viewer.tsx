@@ -8,26 +8,21 @@
  * and the canonical server state replaces the local view.
  *
  * Frozen-at-session-start semantics: memory changes affect new sessions only;
- * running sessions keep the prompt snapshot taken at their start. The warning
- * is visible before any mutation completes.
+ * existing sessions keep the snapshot taken when they started.
  */
-import { useState, type ReactNode } from "react";
+import { Fragment, useState, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  MEMORY_MAX_CONTENT_LENGTH,
-  MemoryApiError,
-  type MemoryEntry,
-  type MemoryStore,
-  type MemoryTab,
-} from "../../lib/memory-api";
-import {
-  useCommitMemoryMutation,
-  useDecidePendingWriteMutation,
-  useMemoryStore,
-  useStageMemoryMutation,
-} from "../../lib/use-memory";
+import { useMemoryStore, useStageMemoryMutation, useCommitMemoryMutation, useDecidePendingWriteMutation } from "@/lib/use-memory";
+import { MEMORY_MAX_CONTENT_LENGTH, MemoryApiError, type MemoryEntry, type MemoryStore, type MemoryTab } from "@/lib/memory-api";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
-/** Fresh QueryClient per mount so cached entries never leak across mounts. */
 export function MemoryViewer(): ReactNode {
   const [queryClient] = useState(
     () =>
@@ -47,24 +42,24 @@ function MemoryViewerInner(): ReactNode {
   const store = useMemoryStore(tab);
 
   return (
-    <section aria-labelledby="memory-title">
-      <h2 id="memory-title">Memory</h2>
-      <div role="tablist" aria-label="Memory stores">
-        <button role="tab" aria-selected={tab === "agent"} onClick={() => setTab("agent")}>
-          Agent memory
-        </button>
-        <button role="tab" aria-selected={tab === "profile"} onClick={() => setTab("profile")}>
-          User profile
-        </button>
-      </div>
-      <p>
+    <section aria-labelledby="memory-title" className="space-y-4">
+      <h2 id="memory-title" className="text-lg font-semibold">Memory</h2>
+      <Tabs value={tab} onValueChange={(v) => setTab(v as MemoryTab)}>
+        <TabsList aria-label="Memory stores">
+          <TabsTrigger value="agent">Agent memory</TabsTrigger>
+          <TabsTrigger value="profile">User profile</TabsTrigger>
+        </TabsList>
+      </Tabs>
+      <p className="text-sm text-muted-foreground">
         Memory changes affect new sessions; existing sessions keep their
         snapshot from when they started.
       </p>
       {store.isPending ? (
-        <p>Loading memory…</p>
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Spinner className="size-3" /> Loading memory…
+        </p>
       ) : store.isError ? (
-        <p role="alert">Could not load memory: {String(store.error)}</p>
+        <p role="alert" className="text-sm text-destructive">Could not load memory: {String(store.error)}</p>
       ) : (
         <MemoryStoreView tab={tab} store={store.data} />
       )}
@@ -123,103 +118,115 @@ function MemoryStoreView({ tab, store }: { tab: MemoryTab; store: MemoryStore })
   }
 
   return (
-    <div>
-      <p data-testid="usage-meter">
+    <div className="space-y-4">
+      <p data-testid="usage-meter" className="text-sm text-muted-foreground">
         <span aria-live="polite">
           {store.budget.used} / {store.budget.limit} characters
         </span>
-        {overBudget ? <strong> over limit</strong> : null}
+        {overBudget ? <strong className="text-destructive"> over limit</strong> : null}
       </p>
 
       {conflict ? (
-        <p role="alert">{conflict}</p>
+        <p role="alert" className="text-sm text-destructive">{conflict}</p>
       ) : null}
 
-      <ul aria-label={`${tab === "agent" ? "Agent memory" : "User profile"} entries`}>
+      <ul aria-label={`${tab === "agent" ? "Agent memory" : "User profile"} entries`} className="space-y-2">
         {store.entries.length === 0 ? (
-          <li>No memory entries yet.</li>
+          <li className="text-sm text-muted-foreground">No memory entries yet.</li>
         ) : (
           store.entries.map((e) => (
-            <li key={e.id}>
-              <span>{e.content}</span>
-              <span> · {e.origin === "automatic" ? "automatic" : "manual"}</span>
-              <span> · updated {e.updatedAt}</span>
-              <button onClick={() => setConfirmingRemoval(e)}>Remove</button>
+            <li key={e.id} className="flex items-center justify-between gap-2 rounded-md border p-2 text-sm">
+              <span className="min-w-0 flex-1 truncate">{e.content}</span>
+              <Badge variant="outline">{e.origin === "automatic" ? "automatic" : "manual"}</Badge>
+              <span className="text-xs text-muted-foreground">updated {e.updatedAt}</span>
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive" onClick={() => setConfirmingRemoval(e)}>
+                Remove
+              </Button>
             </li>
           ))
         )}
       </ul>
 
-      <div>
-        <label htmlFor="new-memory-content">New memory content</label>
-        <input
+      <Separator />
+
+      <div className="space-y-2">
+        <Label htmlFor="new-memory-content">New memory content</Label>
+        <Input
           id="new-memory-content"
           value={draft}
           maxLength={MEMORY_MAX_CONTENT_LENGTH}
           onChange={(e) => setDraft(e.target.value)}
         />
-        {inputError ? <p role="alert">{inputError}</p> : null}
-        <button onClick={stageAdd}>Stage add</button>
+        {inputError ? <p role="alert" className="text-sm text-destructive">{inputError}</p> : null}
+        <Button onClick={stageAdd} disabled={stage.isPending}>Stage add</Button>
       </div>
 
       {store.pendingWrites.length > 0 ? (
-        <div data-testid="pending-writes" aria-label="Pending writes">
-          <h3>Pending writes</h3>
-          <ul>
+        <div data-testid="pending-writes" aria-label="Pending writes" className="space-y-2">
+          <h3 className="font-medium">Pending writes</h3>
+          <ul className="space-y-2">
             {store.pendingWrites.map((p) => (
-              <li key={p.id}>
-                <span>{p.operation}</span>
-                {p.content ? <span>: {p.content}</span> : null}
-                <span> · {p.origin}</span>
-                <button onClick={() => approve(p.id)}>Approve</button>
-                <button
+              <li key={p.id} className="flex items-center gap-2 rounded-md border p-2 text-sm">
+                <Badge variant="secondary">{p.operation}</Badge>
+                {p.content ? <span className="min-w-0 flex-1 truncate">{p.content}</span> : <span className="flex-1" />}
+                <span className="text-xs text-muted-foreground">{p.origin}</span>
+                <Button size="sm" onClick={() => approve(p.id)}>Approve</Button>
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() =>
                     decide.mutate({ tab, pendingWriteId: p.id, action: "reject" })
                   }
                 >
                   Reject
-                </button>
+                </Button>
               </li>
             ))}
           </ul>
         </div>
       ) : null}
 
-      {confirmingRemoval ? (
-        <div role="dialog" aria-label="Confirm removal">
-          <p>Remove this memory entry? This cannot be undone.</p>
-          <p>
-            Remember: changes affect new sessions; existing sessions keep their snapshot.
-          </p>
-          <button
-            onClick={() => {
-              const target = confirmingRemoval;
-              setConfirmingRemoval(null);
-              commit.mutate(
-                {
-                  tab,
-                  pendingWriteId: `remove-${target.id}`,
-                  mutation: {
-                    operation: "remove",
-                    entryId: target.id,
-                    expectedVersion: store.version,
+      <AlertDialog open={confirmingRemoval !== null} onOpenChange={(open) => { if (!open) setConfirmingRemoval(null); }}>
+        <AlertDialogContent role="dialog" aria-label="Confirm removal">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this memory entry?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This cannot be undone. Remember: changes affect new sessions; existing
+              sessions keep their snapshot.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setConfirmingRemoval(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                const target = confirmingRemoval;
+                setConfirmingRemoval(null);
+                if (!target) return;
+                commit.mutate(
+                  {
+                    tab,
+                    pendingWriteId: `remove-${target.id}`,
+                    mutation: {
+                      operation: "remove",
+                      entryId: target.id,
+                      expectedVersion: store.version,
+                    },
                   },
-                },
-                {
-                  onError: (error) => {
-                    if (error instanceof MemoryApiError && error.status === 409) {
-                      setConflict("Memory was changed by someone else. The canonical version is now shown.");
-                    }
+                  {
+                    onError: (error) => {
+                      if (error instanceof MemoryApiError && error.status === 409) {
+                        setConflict("Memory was changed by someone else. The canonical version is now shown.");
+                      }
+                    },
                   },
-                },
-              );
-            }}
-          >
-            Confirm remove
-          </button>
-          <button onClick={() => setConfirmingRemoval(null)}>Cancel</button>
-        </div>
-      ) : null}
+                );
+              }}
+            >
+              Confirm remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
