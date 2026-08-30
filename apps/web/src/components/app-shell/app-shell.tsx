@@ -134,12 +134,7 @@ export function AppShell({
         <WorkspaceIdentity gatewayState={gatewayState} />
         <div className="sidebar-section">
           <button type="button" className="new-chat-btn">
-            New chat <kbd>&#8984;K</kbd>
-          </button>
-        </div>
-        <div className="sidebar-section">
-          <button type="button" aria-label="Search or open command palette">
-            Search&#8230; / Command
+            New chat
           </button>
         </div>
         <NavGroups activePath={useLocation().pathname} />
@@ -187,11 +182,6 @@ function WorkspaceIdentity({ gatewayState }: { gatewayState: GatewayState }) {
   return (
     <div className="sidebar-section workspace-id">
       <strong>Jarvis</strong>
-      <StatusDot
-        className="gateway-status"
-        state={gatewayState === "online" ? "online" : gatewayState}
-        label={`Gateway ${gatewayState}`}
-      />
     </div>
   );
 }
@@ -228,8 +218,9 @@ function RecentSessions() {
 function SidebarFooter() {
   return (
     <div className="sidebar-section sidebar-footer">
-      <button type="button">Appearance</button>
-      <button type="button">Logout</button>
+      <Link to="/settings" className="nav-link">
+        Appearance
+      </Link>
     </div>
   );
 }

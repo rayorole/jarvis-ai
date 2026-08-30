@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useInfiniteSessions, useSessionSearch, useResumeSession, useDeleteSession } from "@/lib/use-sessions";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { SessionSummary } from "@/lib/sessions-api";
 
 /** Fresh QueryClient per mount so cached entries never leak across mounts. */
@@ -54,9 +54,11 @@ function SessionHistoryInner() {
         onChange={(e) => setRawQuery(e.target.value)}
       />
       {showSearchSpinner || showListSpinner ? (
-        <p role="status" data-testid="sessions-loading" className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Spinner className="size-3" /> Loading…
-        </p>
+        <div role="status" data-testid="sessions-loading" className="space-y-1.5 px-1">
+          <Skeleton className="h-3.5 w-full" />
+          <Skeleton className="h-3.5 w-2/3" />
+          <Skeleton className="h-3.5 w-3/4" />
+        </div>
       ) : null}
       {items.length === 0 && !showSearchSpinner && !showListSpinner ? (
         <p className="session-empty text-sm text-muted-foreground" data-testid="sessions-empty">

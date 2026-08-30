@@ -16,7 +16,7 @@ export interface Preferences {
   density: Density;
 }
 
-export const DEFAULT_PREFERENCES: Preferences = { theme: "light", density: "default" };
+export const DEFAULT_PREFERENCES: Preferences = { theme: "dark", density: "default" };
 
 /** Reads persisted preferences without applying them (safe on server/SSR paths). */
 export function readStoredPreferences(): Preferences {
@@ -27,7 +27,16 @@ export function readStoredPreferences(): Preferences {
 function readStored(): Preferences {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_PREFERENCES;
+    if (!raw) {
+      // First visit: respect the OS colour-scheme preference.
+      const prefersDark =
+        typeof window !== "undefined" &&
+        window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+      return {
+        theme: prefersDark ? "dark" : DEFAULT_PREFERENCES.theme,
+        density: DEFAULT_PREFERENCES.density,
+      };
+    }
     const parsed: unknown = JSON.parse(raw);
     const theme = parsed && typeof parsed === "object" && (parsed as Record<string, unknown>).theme;
     const density =
